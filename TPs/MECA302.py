@@ -6,13 +6,14 @@
 import numpy as np
 import pandas as pd
 from string import Template
+import sympy as sp
 
 _torseur_latex = Template(r"""$$$$ 
 \begin{Bmatrix}
 $rx & $mx \\
 $ry & $my \\
 $rz & $mz 
-\end{Bmatrix}_{ ( $px , $py , $pz) , 0 }$$$$
+\end{Bmatrix}_{ ( $px , $py , $pz)_0 }$$$$
 """)
 
 
@@ -43,28 +44,32 @@ class Torseur:
     
     
     def _repr_latex_(self):
-        out = {"rx": self.r[0],
-               "ry": self.r[1],
-               "rz": self.r[2],
-               "mx": self.m[0],
-               "my": self.m[1],
-               "mz": self.m[2],
-               "px": self.p[0],
-               "py": self.p[1],
-               "pz": self.p[2],
+        out = {"rx": sp.latex(self.r[0]),
+               "ry": sp.latex(self.r[1]),
+               "rz": sp.latex(self.r[2]),
+               "mx": sp.latex(self.m[0]),
+               "my": sp.latex(self.m[1]),
+               "mz": sp.latex(self.m[2]),
+               "px": sp.latex(self.p[0]),
+               "py": sp.latex(self.p[1]),
+               "pz": sp.latex(self.p[2]),
                 }
         return _torseur_latex.substitute(**out )
     
     def __add__(self, T):
-      sr = self.r
-      sm = self.m
-      T = T.transport(self.p)
-      tr = T.r
-      tm = T.m
-      return Torseur(r = sr + tr, m = sm + tm, p = self.p)
-    
+        sr = self.r
+        sm = self.m
+        T = T.transport(self.p)
+        tr = T.r
+        tm = T.m
+        return Torseur(r = sr + tr, m = sm + tm, p = self.p)
+
     def __neg__(self):
-      return Torseur(r = -self.r, m = -self.m, p = self.p)
-    
+        return Torseur(r = -self.r, m = -self.m, p = self.p)
+
     def __sub__(self, T):
-      return self - T
+        return self - T
+  
+        
+        
+
